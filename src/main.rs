@@ -8,10 +8,6 @@ enum Status{
     Dead,
 }
 
-struct Dimension{
-    height: u32,
-    weight: u32,
-}
 
 #[derive(Debug, Clone)]
 pub struct Matrix<T> {
