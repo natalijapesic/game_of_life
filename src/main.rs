@@ -3,6 +3,16 @@ use std::io;
 use std::ops::{IndexMut, Index};
 use rand::Rng;
 
+enum Status{
+    Alive,
+    Dead,
+}
+
+struct Dimension{
+    height: u32,
+    weight: u32,
+}
+
 #[derive(Debug, Clone)]
 pub struct Matrix<T> {
     data: Vec<Vec<T>>,
@@ -29,8 +39,7 @@ impl<T> IndexMut<(usize, usize)> for Matrix<T> {
     }
 }
 
-fn main(){
-    
+fn user_input()-> (u32, u32){
 
     let mut dimensions:[u32;2] = [0;2];
 
@@ -61,12 +70,19 @@ fn main(){
 
     }
 
+    (dimensions[0], dimensions[1])
+}
+
+fn main(){
+
+    let (height, width) = user_input();
+
     let mut tmp:Vec<Vec<u32>> = vec![];
 
-    for i in 0..dimensions[0]{
+    for i in 0..height{
         tmp.push(vec![]);
 
-        for j in 0..dimensions[1]{
+        for j in 0..width{
             tmp.last_mut().unwrap().push(rand::thread_rng().gen_range(0..2));
         }
     }
@@ -75,29 +91,29 @@ fn main(){
         data: tmp
     };
 
-    print_matrix(grid.clone(), dimensions[0], dimensions[1]);
+    print_matrix(grid.clone(),height, width);
 
-    next_generation(grid, dimensions[0], dimensions[1]);
+    next_generation(grid, height, width);
 }
 
-fn print_matrix(matrix: Matrix<u32>, n:u32, m:u32){
+fn print_matrix(matrix: Matrix<u32>, height:u32, width:u32){
 
-    for i in 0..n as usize{
+    for i in 0..height as usize{
 
-        for j in 0..m as usize{
+        for j in 0..width as usize{
             print!("{}", matrix[(i,j)]);
         }
         println!("\n")
     }
 }
 
-fn next_generation(grid: Matrix<u32>, mut n:u32, mut m:u32){
+fn next_generation(grid: Matrix<u32>, mut height:u32, mut width:u32){
 
     let mut tmp:Vec<Vec<u32>> = vec![];
 
     let mut count = 0;
-    while count < n {
-        tmp.push(vec![0; m as usize]);
+    while count < height {
+        tmp.push(vec![0; width as usize]);
         count +=1;
     }
 
@@ -105,11 +121,11 @@ fn next_generation(grid: Matrix<u32>, mut n:u32, mut m:u32){
         data: tmp
     };
 
-    n = n-1;
-    m = m-1;
-    for i in 1..n as isize{
+    height = height-1;
+    width = width-1;
+    for i in 1..height as isize{
 
-        for j in 1..m as isize{
+        for j in 1..width as isize{
             
             let mut alive:u32 = 0;
 
@@ -139,5 +155,5 @@ fn next_generation(grid: Matrix<u32>, mut n:u32, mut m:u32){
         }
     }
 
-    print_matrix(next, n + 1, m + 1);
+    print_matrix(next, height + 1, width + 1);
 }
