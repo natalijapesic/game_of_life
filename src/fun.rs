@@ -23,8 +23,6 @@ fn main() {
     let a: [i32; 5] = [1, 2, 3, 4, 5];
 
 
-
-
     //if in a let statement
     game.world[i][j] = if random == 0 { 1 } else { 0 };
 
@@ -289,10 +287,304 @@ and their first parameter is always self, which represents the instance
     have a valid value. 
     So why is having Option<T> any better than having null? */
     
+//match + enum
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
 
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => {
+            println!("Lucky penny!");
+            1
+        }
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
+
+fn main() {
+    let dice_roll = 9;
+    match dice_roll {
+        3 => add_fancy_hat(),
+        7 => remove_fancy_hat(),
+        other => move_player(other),
+    }
+/*catch-all arm last because the patterns are
+ evaluated in order 
+ */
+    fn add_fancy_hat() {}
+    fn remove_fancy_hat() {}
+    fn move_player(num_spaces: u8) {}
+}
+
+/*Rust also has a pattern we can use when we don’t 
+ want to use the value in the catch-all 
+ pattern: _, which is a special pattern that 
+ matches any value and does not bind to that value. 
+ This tells Rust we aren’t going to use the value, 
+ so Rust won’t warn us about an unused variable. */
+
+ fn main() {
+    let dice_roll = 9;
+    match dice_roll {
+        3 => add_fancy_hat(),
+        7 => remove_fancy_hat(),
+        _ => reroll(), // ili ()
+    }
+
+    fn add_fancy_hat() {}
+    fn remove_fancy_hat() {}
+    fn reroll() {}
+}
+
+fn main() {
+    let config_max = Some(3u8);
+    match config_max {
+        Some(max) => println!("The maximum is configured to be {}", max),
+        _ => (),
+    }
+}
+//isto
+fn main() {
+    let config_max = Some(3u8);
+    if let Some(max) = config_max {
+        println!("The maximum is configured to be {}", max);
+    }
+}
+
+
+
+//modules
+mod front_of_house {
+    mod hosting {
+        fn add_to_waitlist() {}
+
+        fn seat_at_table() {}
+    }
+
+    mod serving {
+        fn take_order() {}
+
+        fn serve_order() {}
+
+        fn take_payment() {}
+    }
+}
+
+pub fn eat_at_restaurant() {
+    // Absolute path
+    crate::front_of_house::hosting::add_to_waitlist();
+
+    // Relative path
+    front_of_house::hosting::add_to_waitlist();
+}
+// crate
+//  └── front_of_house
+//      ├── hosting
+//      │   ├── add_to_waitlist
+//      │   └── seat_at_table
+//      └── serving
+//          ├── take_order
+//          ├── serve_order
+//          └── take_payment
+
+//vektori
+//kada izadje iz scope-a onda se brise sve
+fn main() {
+    let v: Vec<i32> = Vec::new();
+    let mut v = Vec::new();
+
+    v.push(5);
+    v.push(6);
+    v.push(7);
+    v.push(8);
+}
+
+//pristupanje elementima
+fn main() {
+    let v = vec![1, 2, 3, 4, 5];
+
+    /*
+    panic ako ode van niza
+     */
+    let third: &i32 = &v[2];
+    println!("The third element is {}", third);
+
+    //Option<&>, zato je i match
+    /*vraca none ako ode van niza, bez panic */
+    match v.get(2) {
+        Some(third) => println!("The third element is {}", third),
+        None => println!("There is no third element."),
+    }
+}
+
+//iter
+fn main() {
+    let v = vec![100, 32, 57];
+    for i in &v {
+        println!("{}", i);
+    }
+    /* dereferenciranje
+    da bi pristupili vrednosti u i */ 
+    for i in &mut v {
+        *i += 50;
+    }
+}
+
+/*when we need to store elements of a different type 
+in a vector, we can define and use an enum! */
+/*Rust needs to know what types will be in the 
+vector at compile time so it knows exactly how 
+much memory on the heap will be needed to store 
+each element. */
+fn main() {
+    enum SpreadsheetCell {
+        Int(i32),
+        Float(f64),
+        Text(String),
+    }
+
+    let row = vec![
+        SpreadsheetCell::Int(3),
+        SpreadsheetCell::Text(String::from("blue")),
+        SpreadsheetCell::Float(10.12),
+    ];
+}
+
+//trings are implemented as a collection of bytes
     
-    
-    
+fn main() {
+    let mut s = String::new();
+    let s = "initial contents".to_string();
+    //ili 
+    let s = String::from("initial contents");
+
+    //konkateniranje
+    let mut s = String::from("foo");
+    s.push_str("bar");
+    s.push("bar");
+}
+   
+//generic type
+
+fn largest<T>(list: &[T]) -> T {
+    let mut largest = list[0];
+
+    for &item in list {
+        //ovo nece da radi za bilo koji tip
+        if item > largest { 
+            largest = item;
+        }
+    }
+
+    largest
+}
+
+fn main() {
+    let number_list = vec![34, 50, 25, 100, 65];
+
+    let result = largest(&number_list);
+    println!("The largest number is {}", result);
+
+    let char_list = vec!['y', 'm', 'a', 'q'];
+
+    let result = largest(&char_list);
+    println!("The largest char is {}", result);
+}
+
+//enum + generic
+
+struct Point<T, U> {
+    x: T,
+    y: U,
+}
+
+fn main() {
+    let both_integer = Point { x: 5, y: 10 };
+    let both_float = Point { x: 1.0, y: 4.0 };
+    let integer_and_float = Point { x: 5, y: 4.0 };
+}
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+//generic + method
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+/*posle impl mora da se def T 
+kako bi znali da Point koristi generic type */
+/*impl that declares the generic type will be 
+defined on any instance of the type */
+impl<T> Point<T> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+}
+
+fn main() {
+    let p = Point { x: 5, y: 10 };
+
+    println!("p.x = {}", p.x());
+}
+
+//trait
+/*A trait tells the Rust compiler about 
+functionality a particular type has and 
+can share with other types. We can use 
+traits to define shared behavior in 
+an abstract way. */
+pub trait Summary {
+    fn summarize(&self) -> String;
+}
+/*declared the trait as pub so that crates 
+depending on this crate can make use of this 
+trait too */
+
+pub trait Summary {
+    fn summarize(&self) -> String;
+}
+
+pub struct NewsArticle {
+    pub headline: String,
+    pub location: String,
+    pub author: String,
+    pub content: String,
+}
+
+impl Summary for NewsArticle {
+    fn summarize(&self) -> String {
+        format!("{}, by {} ({})", self.headline, self.author, self.location)
+    }
+}
+
+pub struct Tweet {
+    pub username: String,
+    pub content: String,
+    pub reply: bool,
+    pub retweet: bool,
+}
+
+impl Summary for Tweet {
+    fn summarize(&self) -> String {
+        format!("{}: {}", self.username, self.content)
+    }
+}
+
+/*The difference is that after impl, 
+we put the trait name that we want 
+to implement, then use the for keyword, 
+and then specify the name of the type we 
+want to implement the trait for. */
     
 
 
