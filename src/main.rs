@@ -11,14 +11,35 @@ enum State{
 
 #[derive(Debug, Clone)]
 pub struct Matrix<T> {
+    height:Option<u32>,
+    width:Option<u32>,
     data: Vec<Vec<T>>,
 }
 
 impl<T> Matrix<T> {
-    pub fn new(data:Vec<Vec<T>>) -> Self {
+    pub fn new(h:u32, w:u32) -> Self {
 
-        Self { data }
+        Self {
+            height: Some(h),
+            width: Some(w),
+            data: vec![]
+        }
     }
+
+    // pub fn init(self) -> Self{
+
+    //     let h_iter = self.data.iter();
+    // }
+
+    // pub fn height(&mut self, height:usize) -> usize{
+    //     match self.height{
+    //         Some(h) => h,
+    //         None => {
+    //             self.height = Some(height);
+    //             height
+    //         }
+    //     }
+    // }
 }
 
 impl<T> Index<(usize, usize)> for Matrix<T> {
@@ -39,20 +60,21 @@ fn user_input()-> (u32, u32){
 
     let mut dimensions:[u32;2] = [0;2];
 
-    for i in 0..2 {
+    let mut index = 0;
+    'counting_up: loop{
 
         loop {
 
-            println!("Input {}. dimension of grid:", i + 1);
+            println!("Input {}. dimension of grid:", index + 1);
 
             let mut line = String::new();
             io::stdout().flush().unwrap();
             io::stdin()
                 .read_line(&mut line)
                 .expect("Failed to read line");
-        
 
-            dimensions[i] = match line.trim().parse(){
+
+            dimensions[index] = match line.trim().parse(){
                 Ok(num) => num,
                 Err(_) => continue,
             };
@@ -62,7 +84,12 @@ fn user_input()-> (u32, u32){
 
         }
 
-        println!("{}. dim is: {}", i + 1, dimensions[i]);
+        println!("{}. dim is: {}", index + 1, dimensions[index]);
+
+        index += 1;
+
+        if index == 2 {
+            break 'counting_up;
 
     }
 
@@ -122,7 +149,7 @@ fn next_generation(grid: Matrix<u32>, mut height:u32, mut width:u32){
     for i in 1..height as isize{
 
         for j in 1..width as isize{
-            
+
             let mut alive:u32 = 0;
 
             for k in -1..2 as isize{

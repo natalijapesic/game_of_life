@@ -608,5 +608,84 @@ pub fn notify<T: Summary + Display + Clone>(item1: &T, item2: &T){
     println!("Breaking news! {}", item.summarize());
 }
 
+//closures
+// closures are able to capture their evnironment
+/*
+in 3 ways:
+1. taking ownership FnOnce, koristi se move
+- ovaj closure se zove samo jednom
+2. borrowing immutably Fn
+3. borrowing mutably FnMut
+ */
+/*razlika izmedju fje i closure-a 
+je sto se parametri nalaze unutar ||
+ako fja ima jednu liniju onda nam ne treba {}
 
+var ne cuva rezultat fje vec sam closure
+ne mora da se definise tip parametara niti 
+povratni tip*/
+
+struct Cacher<T>
+where
+    T: Fn(u32) -> u32,
+{
+    calculation: T,
+    value: Option<u32>,
+}
+
+/* Fn trait, iz std i svi closures implementiraju
+3 fn-a: Fn, FnMut, FnOnce 
+kao i obicne fje
+
+new je contructor*/
+
+/*************
+ * 
+ * 
+ * Optional koristim kao type kada npr 
+ * pravim neki strukt koji na pocetku ima
+ * None vrednost a kasnije se inicijalizuje
+*/
+
+
+/* iterators */
+//All iterators implement a trait 
+///named Iterator from std
+fn main() {
+    let v1 = vec![1, 2, 3];
+
+    let v1_iter = v1.iter();
+
+    for val in v1_iter {
+        println!("Got: {}", val);
+    }
+}
+
+pub trait Iterator {
+    type Item;
+    //Item, povratni tip Iterator-a
+    /*next metoda vraca sledeci element iz niza
+    vrapovan u Some i kada se dodje do kraja
+    on vraca None*/
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+/*
+v.iter(), immutable references to the values in the vector
+v.iter_mut(), mutable references
+v.into_iter() iterator takes ownership of v and returns
+owned values
+ */
+
+/***************
+ * assert_eq!.. verovatno poredi dva elementa?
+ */
+
+fn main() {
+    let v1: Vec<i32> = vec![1, 2, 3];
+
+    let v2: Vec<_> = v1.iter().map(|x| x + 1).collect();
+
+    assert_eq!(v2, vec![2, 3, 4]);
+}
 
