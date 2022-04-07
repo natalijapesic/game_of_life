@@ -585,7 +585,28 @@ we put the trait name that we want
 to implement, then use the for keyword, 
 and then specify the name of the type we 
 want to implement the trait for. */
-    
+
+/*
+1. moze da se definise kao interfejs
+i da onda svaki tip koji implementira trait
+da implementira taj trait na svoj nacin
+---ali tip mora da implementira ako ne postoji
+default imp
+
+2. moze da postoji default implementacija
+i da onda svaki tip ima istu..kao virtual metode
+ali takodje tip moze da override-uje tu fju
+
+3.default imp mogu da zovu druge metode unutar trait-a
+
+4.trait moze biti i parametar neke fje
+time se kaze fji da parametar moze biti bilo sta
+sto implementira dati trait*/
+
+//ovo moze lepse da se napise pomocu Where
+pub fn notify<T: Summary + Display + Clone>(item1: &T, item2: &T){
+    println!("Breaking news! {}", item.summarize());
+}
 
 
 

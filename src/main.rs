@@ -3,9 +3,9 @@ use std::io;
 use std::ops::{IndexMut, Index};
 use rand::Rng;
 
-enum Status{
-    Alive,
-    Dead,
+enum State{
+    Alive(char),
+    Dead(char),
 }
 
 
@@ -17,7 +17,7 @@ pub struct Matrix<T> {
 impl<T> Matrix<T> {
     pub fn new(data:Vec<Vec<T>>) -> Self {
 
-        Self { data}
+        Self { data }
     }
 }
 
