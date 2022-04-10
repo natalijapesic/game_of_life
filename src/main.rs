@@ -1,3 +1,5 @@
+
+
 use rand::distributions::Uniform;
 use rand::Rng;
 
@@ -54,7 +56,6 @@ impl World {
     pub fn next_generation(&mut self) {
         let mut next = self.clone();
     
-        //DA LI JE MOGUCE DA BEZ KLONIRANJA U SVAKOJ ITERACIJI SE OVA FJA POZIVA a ne inline da se izvrsava?
         for i in 0..next.height {
             for j in 0..next.width {
                 let live = {
@@ -117,24 +118,30 @@ impl World {
     }
 }
 
+// impl Display for World {
+
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         // Customize so only `x` and `y` are denoted.
+//         write!(f, "x: {}, y: {}", self.x, self.y)
+//     }
+// }
+
 
 
 fn main() {
-    let mut game: World = World::new(5, 5);
+    let mut game: World = World::new(20, 20);
     
     let mut count = 0;
     'counting_up: loop {
 
         println!("kdjcsn");
-            //clear
         game.draw();
             //sleep
         game.next_generation();
         
             count += 1;
-            if count == 2{
+            if count == 10{
                 break 'counting_up;
             }
     }
-
 }
