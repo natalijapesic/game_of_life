@@ -1,6 +1,5 @@
 use rand::distributions::Uniform;
 use rand::Rng;
-use std::ops::{Index, IndexMut};
 
 #[derive(Debug, Clone, Copy)]
 pub enum State {
@@ -86,9 +85,9 @@ impl World {
                     lives
                 };
     
-                let current_state = self[(i as usize, j as usize)];
+                let current_state = self.grid[i as usize][j as usize];
     
-                next[(i as usize, j as usize)] = match (current_state, live) {
+                next.grid[i as usize][j as usize] = match (current_state, live) {
                     (State::Alive, 2 | 3) => State::Alive,
                     (State::Alive, _) => State::Dead,
                     (State::Dead, 3) => State::Alive,
@@ -118,19 +117,6 @@ impl World {
     }
 }
 
-impl Index<(usize, usize)> for World {
-    type Output = State;
-
-    fn index(&self, index: (usize, usize)) -> &Self::Output {
-        &self.grid[index.0][index.1]
-    }
-}
-impl IndexMut<(usize, usize)> for World {
-    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
-        &mut self.grid[index.0][index.1]
-    }
-}
-
 
 
 fn main() {
@@ -139,15 +125,16 @@ fn main() {
     let mut count = 0;
     'counting_up: loop {
 
-    println!("kdjcsn");
-        //clear
-    game.draw();
-        //sleep
-    game.next_generation();
-    
-        count += 1;
-        if count == 2{
-            break 'counting_up;
-        }
+        println!("kdjcsn");
+            //clear
+        game.draw();
+            //sleep
+        game.next_generation();
+        
+            count += 1;
+            if count == 2{
+                break 'counting_up;
+            }
     }
+
 }
