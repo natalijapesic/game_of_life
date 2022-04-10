@@ -625,6 +625,24 @@ var ne cuva rezultat fje vec sam closure
 ne mora da se definise tip parametara niti 
 povratni tip*/
 
+fn main(){
+
+    //funcion def
+    fn  add_one_v1   (x: u32) -> u32 { x + 1 }
+
+    //fully annotated closure def
+    let add_one_v2 = |x: u32| -> u32 { x + 1 };
+
+    //closure skraceno
+    let add_one_v3 = |x|             { x + 1 };
+    let add_one_v4 = |x|               x + 1  ;
+
+    let example_closure = |x| x;
+
+    let s = example_closure(String::from("hello"));
+
+}
+
 struct Cacher<T>
 where
     T: Fn(u32) -> u32,
@@ -817,3 +835,6 @@ separate scopes that are more like the way end users will be using your crate.
 However, this means files in the tests directory don’t share the same behavior
 as files in src do, as you learned in Chapter 7 regarding how to separate code
 into modules and files. */
+
+
+

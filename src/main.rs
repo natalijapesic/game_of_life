@@ -1,9 +1,11 @@
 use std::fmt::{Display, self};
+use std::thread;
+use std::time::Duration;
 
 use rand::distributions::Uniform;
 use rand::Rng;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum State {
     Alive,
     Dead,
@@ -24,6 +26,16 @@ impl World {
             width: w,
             grid: vec![],
         }
+    }
+
+    pub fn test(data:Vec<Vec<i32>>)->Self{
+
+        Self {
+            height: 10,
+            width: 10,
+            grid: vec![],
+        }
+
     }
 
     pub fn new(h: i32, w: i32) -> Self {
@@ -53,7 +65,7 @@ impl World {
         }
     }
 
-    pub fn next_generation(&mut self) {
+    pub fn next_generation(&mut self) -> &Vec<Vec<State>> {
         let mut next = self.clone();
     
         for i in 0..next.height {
@@ -98,6 +110,7 @@ impl World {
         }
 
         self.grid = next.grid.clone();
+        &self.grid
     }
 
 
@@ -136,12 +149,46 @@ fn main() {
     'counting_up: loop {
 
         game.draw();
+        thread::sleep(Duration::from_secs(2));
         game.next_generation();
         
-            count += 1;
-            if count == 10{
-                break 'counting_up;
-            }
+        count += 1;
+        if count == 10{
+            break 'counting_up;
+        }
     }
 }
 
+
+pub fn compare_vectors(a:Vec<State>, b:Vec<State>) -> usize{
+
+    a.iter().zip(&b).filter(|&(a, b)| a == b).count()
+    
+}
+
+
+#[cfg(test)]
+mod tests {
+    use crate::{compare_vectors, State, World};
+
+    #[test]
+    fn compare_generations() -> Result<(), String> {
+
+        let data = vec![
+            vec![1,0,0,0,1],
+            vec![0,1,0,1,0],
+            vec![0,0,1,0,0],
+            vec![0,1,0,1,0],
+            vec![1,0,0,0,1]
+            ];
+
+        let mut game_test:World = World::test(data);
+
+        let same_cell = compare_vectors(vec![State::Alive;10], vec![State::Dead;10]);
+        if 10 == same_cell {
+            Ok(())
+        } else {
+            Err(format!("First row has only {} same cell", same_cell))
+        }
+    }
+}
