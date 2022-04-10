@@ -690,3 +690,130 @@ fn main() {
 }
 
 
+//testovi
+
+/*
+Set up any needed data or state.
+Run the code you want to test.
+Assert the results are what you expect.
+
+ To change a function into a test function, add #[test]
+ */
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
+    }
+}
+
+/*
+nije bitno sta je prvi a sta drugi argument
+assert_eq! za jednakost
+assert_ne! za nejednakost
+
+We place the #[should_panic] attribute after the #[test] attribute 
+and before the test function it applies to.
+
+To make should_panic tests more precise, we can add an optional 
+expected parameter to the should_panic attribute.
+*/
+
+pub struct Guess {
+    value: i32,
+}
+
+impl Guess {
+    pub fn new(value: i32) -> Guess {
+        if value < 1 {
+            panic!(
+                "Guess value must be greater than or equal to 1, got {}.",
+                value
+            );
+        } else if value > 100 {
+            panic!(
+                "Guess value must be less than or equal to 100, got {}.",
+                value
+            );
+        }
+
+        Guess { value }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    //expected se dodaje kako bi se preciznije odredilo zasto je 
+    //doslo do panic result-a
+    #[test]
+    #[should_panic(expected = "Guess value must be less than or equal to 100")]
+    fn greater_than_100() {
+        Guess::new(200);
+    }
+}
+
+
+//umesto da panici on samo detektuje gresku
+//ovde ne moze da se koristi #[should_panic]
+//sto je i logicno jer ovde baca error a ne panic
+// upitnik se koristi na kraju i tada se ocekuje Result
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn it_works() -> Result<(), String> {
+        if 2 + 2 == 4 {
+            Ok(())
+        } else {
+            Err(String::from("two plus two does not equal four"))
+        }
+    }
+}
+
+//kada postoje vise testova, oni se izvrsavaju paralelno
+//$ cargo test -- --test-threads=1
+//za definisanje broja niti 
+//ako u funkciji koju pozivamo imamo println onda ce taj println da se istampa
+//samo ako fail-uje test
+
+
+//ali ako zelim da vidim rezultat vrednosti za testove koji su prosli
+//onda: $ cargo test -- --show-output
+
+
+//ako zelim da pozovem samo jedan test onda je dovoljno da upisem
+//cargo test ime_test_funkcije
+
+//We can specify part of a test name, 
+//and any test whose name matches that value will be run
+
+#[test]
+#[ignore] //za vece testove, koji trenutno nisu potrebni
+fn expensive_test() {
+    // code that takes an hour to run
+}
+//ako zelim samo njega da aktiviram
+//cargo test -- --ignored
+
+//unit testovi, nalaze se u okviru fajla
+//gde se i funkcije koje treba testirati nalaze
+
+//integration testovi se nalaze u posebnom fajlu
+// Their purpose is to test whether many parts of your library work together correctly
+//nalaze se u dir tests odmah do src-a
+/*
+We don’t need to annotate any code in tests/integration_test.rs with #[cfg(test)].
+Cargo treats the tests directory specially and compiles files in this directory only
+when we run cargo test */
+
+//ako zelim da pokrenem samo integration testove:
+//cargo test --test integration_test
+
+/***************************** */
+/*Treating each integration test file as its own crate is useful to create 
+separate scopes that are more like the way end users will be using your crate.
+However, this means files in the tests directory don’t share the same behavior
+as files in src do, as you learned in Chapter 7 regarding how to separate code
+into modules and files. */

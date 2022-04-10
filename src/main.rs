@@ -1,4 +1,4 @@
-
+use std::fmt::{Display, self};
 
 use rand::distributions::Uniform;
 use rand::Rng;
@@ -108,8 +108,8 @@ impl World {
                 line.iter()
                     .map(|l| {
                         match l {
-                            State::Alive => "A",
-                            State::Dead => ".",
+                            State::Alive => " A ",
+                            State::Dead => " . ",
                         }
                     })
                     .collect::<String>()
@@ -118,25 +118,24 @@ impl World {
     }
 }
 
-// impl Display for World {
 
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         // Customize so only `x` and `y` are denoted.
-//         write!(f, "x: {}, y: {}", self.x, self.y)
-//     }
-// }
+impl Display for World {
+
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        
+        write!(f, "{}",10)
+    }
+}
 
 
 
 fn main() {
-    let mut game: World = World::new(20, 20);
+    let mut game: World = World::new(5, 5);
     
     let mut count = 0;
     'counting_up: loop {
 
-        println!("kdjcsn");
         game.draw();
-            //sleep
         game.next_generation();
         
             count += 1;
@@ -145,3 +144,4 @@ fn main() {
             }
     }
 }
+
