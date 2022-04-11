@@ -113,7 +113,7 @@ impl World {
 impl fmt::Display for World {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for line in &self.grid {
-            write!(
+            writeln!(
                 f,
                 "{}",
                 line.iter()
