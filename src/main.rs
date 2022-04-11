@@ -1,4 +1,4 @@
-use std::fmt::{self, Display};
+use std::fmt::{self};
 use std::thread;
 use std::time::Duration;
 
@@ -31,7 +31,7 @@ impl World {
         Self {
             height: h,
             width: w,
-            grid: World::convert_into_enum(data, h as usize, w as usize),
+            grid: Wrapper::from(data).into(),
         }
     }
 
@@ -60,67 +60,6 @@ impl World {
             width: w,
             grid: data,
         }
-    }
-
-    fn compare_vectors(a: Vec<State>, b: Vec<State>) -> usize {
-        a.iter().zip(&b).filter(|&(a, b)| a == b).count()
-    }
-
-    fn compare_generations(&mut self, expected_data: Vec<Vec<i32>>) {
-        let generated_next = self.next_generation();
-        let expected_next: Vec<Vec<State>> = World::convert_into_enum(expected_data, 5, 5);
-
-        for i in 0..self.height {
-            let same_cells = World::compare_vectors(
-                generated_next[i as usize].clone(),
-                expected_next[i as usize].clone(),
-            );
-
-            if same_cells < 5 {
-                panic!("Row {} has only {} same cells", i, same_cells)
-            }
-        }
-    }
-
-    // for i in 0..h {
-    //     copy_data[i as usize].push(
-    //         data[i as usize]
-    //             .iter()
-    //             .map(|element| {
-    //                 if let 1 = element {
-    //                     State::Alive
-    //                 } else {
-    //                     State::Dead
-    //                 }
-    //             })
-    //             .collect(),
-    //     );
-    // }
-
-    pub fn convert_into_enum(data: Vec<Vec<i32>>, h: usize, w: usize) -> Vec<Vec<State>> {
-        let mut converted_grid: Vec<Vec<State>> = vec![];
-
-        for i in 0..h {
-            let mut row: Vec<State> = vec![];
-
-            // row.push(if let 1 = data[i].iter().unzip() {
-            //     State::Alive
-            // } else {
-            //     State::Dead
-            // });
-
-            for j in 0..w {
-                row.push(if let 1 = data[i][j] {
-                    State::Alive
-                } else {
-                    State::Dead
-                });
-            }
-
-            converted_grid.push(row);
-        }
-
-        converted_grid
     }
 
     pub fn next_generation(&mut self) -> Vec<Vec<State>> {
@@ -169,10 +108,13 @@ impl World {
         self.grid = next.grid.clone();
         self.grid.clone()
     }
+}
 
-    pub fn draw(&self) {
+impl fmt::Display for World {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for line in &self.grid {
-            println!(
+            write!(
+                f,
                 "{}",
                 line.iter()
                     .map(|l| {
@@ -182,14 +124,43 @@ impl World {
                         }
                     })
                     .collect::<String>()
-            )
+            )?;
+        }
+        Ok(())
+    }
+}
+
+impl From<i32> for State {
+    fn from(item: i32) -> State {
+        if item == 1 {
+            State::Alive
+        } else {
+            State::Dead
         }
     }
 }
 
-impl Display for World {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", 10)
+struct Wrapper(Vec<Vec<State>>);
+
+impl Into<Vec<Vec<State>>> for Wrapper {
+    fn into(self) -> Vec<Vec<State>> {
+        self.0
+    }
+}
+
+impl From<Vec<Vec<i32>>> for Wrapper {
+    fn from(grid: Vec<Vec<i32>>) -> Wrapper {
+        let mut converted_grid: Vec<Vec<State>> = vec![];
+
+        for item in grid.iter() {
+            let row = item
+                .iter()
+                .map(|cell| State::from(*cell))
+                .collect::<Vec<State>>();
+            converted_grid.push(row);
+        }
+
+        Wrapper(converted_grid)
     }
 }
 
@@ -198,7 +169,7 @@ fn main() {
 
     let mut count = 0;
     'counting_up: loop {
-        game.draw();
+        println!("{:}", game);
         thread::sleep(Duration::from_secs(2));
         game.next_generation();
 
@@ -211,7 +182,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::World;
+    use crate::{State, World, Wrapper};
 
     #[test]
     fn test_generation() {
@@ -230,8 +201,11 @@ mod tests {
             vec![0, 1, 1, 1, 0],
             vec![0, 0, 0, 0, 0],
         ];
-        let mut world = World::generate_grid(5, 5, data);
+        let mut world = World::generate_grid(5, 5, data.clone());
+        world.next_generation();
 
-        world.compare_generations(expected_data);
+        let converted_expected: Vec<Vec<State>> = Wrapper::from(expected_data.clone()).into();
+
+        assert_eq!(converted_expected, world.grid);
     }
 }

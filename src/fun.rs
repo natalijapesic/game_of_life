@@ -19,9 +19,7 @@ fn main() {
         [-1, -1],
     ];
 
-    
     let a: [i32; 5] = [1, 2, 3, 4, 5];
-
 
     //if in a let statement
     game.world[i][j] = if random == 0 { 1 } else { 0 };
@@ -38,7 +36,7 @@ fn main() {
                 break;
             }
             if count == 2 {
-                break 'counting_up; 
+                break 'counting_up;
                 //ovako se zove loop i kada dodje do 2 on izadje
             }
             remaining -= 1;
@@ -69,8 +67,6 @@ fn main() {
     for number in (1..4).rev() {
         println!("{}!", number);
     }
-
-
 }
 
 fn tuples() {
@@ -132,161 +128,160 @@ fn main() {
     );
 }
 
-/*we want to borrow the struct rather than take ownership of it. 
-This way, main retains its ownership and can continue using rect1, 
-which is the reason we use the & in the function signature and 
+/*we want to borrow the struct rather than take ownership of it.
+This way, main retains its ownership and can continue using rect1,
+which is the reason we use the & in the function signature and
 where we call the function */
 fn area(rectangle: &Rectangle) -> u32 {
     rectangle.width * rectangle.height
 }
 
-/*Methods are similar to functions: we declare them with the fn keyword and a name, 
-they can have parameters and a return value, and they contain some code that’s run 
+/*Methods are similar to functions: we declare them with the fn keyword and a name,
+they can have parameters and a return value, and they contain some code that’s run
 when the method is called from somewhere else. Unlike functions, methods are defined
- within the context of a struct (or an enum or a trait object), 
+ within the context of a struct (or an enum or a trait object),
 and their first parameter is always self, which represents the instance
  of the struct the method is being called on. */
 
-    #[derive(Debug)]
-    struct Rectangle {
-        width: u32,
-        height: u32,
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    //bilo koja fja koja se nalazi na dalje
+    //bice upucena strukturi Rectangle
+    /*
+    &self instead of rectangle: &Rectangle
+    The &self is actually short for self: &Self
+    the type Self is an alias for the type that the impl block is for.
+
+    Methods can take ownership of self, self
+    borrow self immutably, &self
+    borrow self mutably, &mut self (change)
+    just as they can any other parameter.
+
+    this method borrows the Self instance
+     */
+    fn area(&self) -> u32 {
+        self.width * self.height
     }
-    
-    impl Rectangle {
-        //bilo koja fja koja se nalazi na dalje
-        //bice upucena strukturi Rectangle
-        /*
-        &self instead of rectangle: &Rectangle
-        The &self is actually short for self: &Self
-        the type Self is an alias for the type that the impl block is for.
+}
 
-        Methods can take ownership of self, self
-        borrow self immutably, &self
-        borrow self mutably, &mut self (change)
-        just as they can any other parameter.
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
 
-        this method borrows the Self instance
-         */
-        fn area(&self) -> u32 {
-            self.width * self.height
+    println!(
+        "The area of the rectangle is {} square pixels.",
+        rect1.area()
+    );
+}
+
+//associated functions - najcesce kao konstruktor
+/*All functions defined within an impl block are called
+associated functions because they’re associated with the
+type named after the impl. We can define associated functions
+that don’t have self as their first parameter */
+impl Rectangle {
+    fn square(size: u32) -> Rectangle {
+        Rectangle {
+            width: size,
+            height: size,
         }
     }
-    
-    fn main() {
-        let rect1 = Rectangle {
-            width: 30,
-            height: 50,
-        };
-    
-        println!(
-            "The area of the rectangle is {} square pixels.",
-            rect1.area()
-        );
-    }
+}
 
-    //associated functions - najcesce kao konstruktor
-    /*All functions defined within an impl block are called 
-    associated functions because they’re associated with the 
-    type named after the impl. We can define associated functions 
-    that don’t have self as their first parameter */
-    impl Rectangle {
-        fn square(size: u32) -> Rectangle {
-            Rectangle {
-                width: size,
-                height: size,
-            }
-        }
-    }
+fn main() {
+    let sq = Rectangle::square(3);
+}
 
-    fn main() {
-        let sq = Rectangle::square(3);
-    }
+//enum
+enum IpAddrKind {
+    V4,
+    V6,
+}
 
-    //enum
-    enum IpAddrKind {
-        V4,
-        V6,
-    }
-    
-    fn main() {
-        let four = IpAddrKind::V4;
-        let six = IpAddrKind::V6;
-    
-        route(IpAddrKind::V4);
-        route(IpAddrKind::V6);
-    }
-    
-    fn route(ip_kind: IpAddrKind) {}
+fn main() {
+    let four = IpAddrKind::V4;
+    let six = IpAddrKind::V6;
 
-    fn main() {
-        enum IpAddr {
-            V4(String),
-            V6(String),
-        }
-    
-        /*
-        That is, IpAddr::V4() is a function call that takes 
-        a String argument and returns an instance of the IpAddr 
-        type. We automatically get this constructor function defined 
-        as a result of defining the enum. 
-        you can put any kind of data inside an enum 
-        */
+    route(IpAddrKind::V4);
+    route(IpAddrKind::V6);
+}
 
-        let home = IpAddr::V4(String::from("127.0.0.1"));
-    
-        let loopback = IpAddr::V6(String::from("::1"));
+fn route(ip_kind: IpAddrKind) {}
+
+fn main() {
+    enum IpAddr {
+        V4(String),
+        V6(String),
     }
-    
-    //enum sa fjom
-    fn main() {
-        enum Message {
-            Quit,
-            Move { x: i32, y: i32 },
-            Write(String),
-            ChangeColor(i32, i32, i32),
-        }
-    
-        impl Message {
-            fn call(&self) {
-                // method body would be defined here
-            }
-        }
-    
-        let m = Message::Write(String::from("hello"));
-        m.call();
-
-        /*The body of the method would use self to 
-        get the value that we called the method on. 
-        In this example, we’ve created a variable m 
-        that has the value Message::Write(String::from("hello")),
-        and that is what self will be in the body of the call
-         method when m.call() runs. */
-    }
-
 
     /*
-    The Option Enum and Its Advantages Over Null Values
-    
-    Rust doesn’t have the null feature
+    That is, IpAddr::V4() is a function call that takes
+    a String argument and returns an instance of the IpAddr
+    type. We automatically get this constructor function defined
+    as a result of defining the enum.
+    you can put any kind of data inside an enum
     */
 
-    enum Option<T> {
-        None,
-        Some(T),
-    }
-    fn main() {
-        let some_number = Some(5);
-        let some_string = Some("a string");
-    
-        let absent_number: Option<i32> = None;
+    let home = IpAddr::V4(String::from("127.0.0.1"));
+
+    let loopback = IpAddr::V6(String::from("::1"));
+}
+
+//enum sa fjom
+fn main() {
+    enum Message {
+        Quit,
+        Move { x: i32, y: i32 },
+        Write(String),
+        ChangeColor(i32, i32, i32),
     }
 
-    /*When we have a None value, in some sense, 
-    it means the same thing as null: we don’t 
-    have a valid value. 
-    So why is having Option<T> any better than having null? */
-    
+    impl Message {
+        fn call(&self) {
+            // method body would be defined here
+        }
+    }
+
+    let m = Message::Write(String::from("hello"));
+    m.call();
+
+    /*The body of the method would use self to
+    get the value that we called the method on.
+    In this example, we’ve created a variable m
+    that has the value Message::Write(String::from("hello")),
+    and that is what self will be in the body of the call
+     method when m.call() runs. */
+}
+
+/*
+The Option Enum and Its Advantages Over Null Values
+
+Rust doesn’t have the null feature
+*/
+
+enum Option<T> {
+    None,
+    Some(T),
+}
+fn main() {
+    let some_number = Some(5);
+    let some_string = Some("a string");
+
+    let absent_number: Option<i32> = None;
+}
+
+/*When we have a None value, in some sense,
+it means the same thing as null: we don’t
+have a valid value.
+So why is having Option<T> any better than having null? */
+
 //match + enum
 enum Coin {
     Penny,
@@ -314,22 +309,22 @@ fn main() {
         7 => remove_fancy_hat(),
         other => move_player(other),
     }
-/*catch-all arm last because the patterns are
- evaluated in order 
- */
+    /*catch-all arm last because the patterns are
+    evaluated in order
+    */
     fn add_fancy_hat() {}
     fn remove_fancy_hat() {}
     fn move_player(num_spaces: u8) {}
 }
 
-/*Rust also has a pattern we can use when we don’t 
- want to use the value in the catch-all 
- pattern: _, which is a special pattern that 
- matches any value and does not bind to that value. 
- This tells Rust we aren’t going to use the value, 
- so Rust won’t warn us about an unused variable. */
+/*Rust also has a pattern we can use when we don’t
+want to use the value in the catch-all
+pattern: _, which is a special pattern that
+matches any value and does not bind to that value.
+This tells Rust we aren’t going to use the value,
+so Rust won’t warn us about an unused variable. */
 
- fn main() {
+fn main() {
     let dice_roll = 9;
     match dice_roll {
         3 => add_fancy_hat(),
@@ -356,8 +351,6 @@ fn main() {
         println!("The maximum is configured to be {}", max);
     }
 }
-
-
 
 //modules
 mod front_of_house {
@@ -430,17 +423,17 @@ fn main() {
         println!("{}", i);
     }
     /* dereferenciranje
-    da bi pristupili vrednosti u i */ 
+    da bi pristupili vrednosti u i */
     for i in &mut v {
         *i += 50;
     }
 }
 
-/*when we need to store elements of a different type 
+/*when we need to store elements of a different type
 in a vector, we can define and use an enum! */
-/*Rust needs to know what types will be in the 
-vector at compile time so it knows exactly how 
-much memory on the heap will be needed to store 
+/*Rust needs to know what types will be in the
+vector at compile time so it knows exactly how
+much memory on the heap will be needed to store
 each element. */
 fn main() {
     enum SpreadsheetCell {
@@ -457,11 +450,11 @@ fn main() {
 }
 
 //trings are implemented as a collection of bytes
-    
+
 fn main() {
     let mut s = String::new();
     let s = "initial contents".to_string();
-    //ili 
+    //ili
     let s = String::from("initial contents");
 
     //konkateniranje
@@ -469,7 +462,7 @@ fn main() {
     s.push_str("bar");
     s.push("bar");
 }
-   
+
 //generic type
 
 fn largest<T>(list: &[T]) -> T {
@@ -477,7 +470,7 @@ fn largest<T>(list: &[T]) -> T {
 
     for &item in list {
         //ovo nece da radi za bilo koji tip
-        if item > largest { 
+        if item > largest {
             largest = item;
         }
     }
@@ -521,9 +514,9 @@ struct Point<T> {
     y: T,
 }
 
-/*posle impl mora da se def T 
+/*posle impl mora da se def T
 kako bi znali da Point koristi generic type */
-/*impl that declares the generic type will be 
+/*impl that declares the generic type will be
 defined on any instance of the type */
 impl<T> Point<T> {
     fn x(&self) -> &T {
@@ -538,16 +531,16 @@ fn main() {
 }
 
 //trait
-/*A trait tells the Rust compiler about 
-functionality a particular type has and 
-can share with other types. We can use 
-traits to define shared behavior in 
+/*A trait tells the Rust compiler about
+functionality a particular type has and
+can share with other types. We can use
+traits to define shared behavior in
 an abstract way. */
 pub trait Summary {
     fn summarize(&self) -> String;
 }
-/*declared the trait as pub so that crates 
-depending on this crate can make use of this 
+/*declared the trait as pub so that crates
+depending on this crate can make use of this
 trait too */
 
 pub trait Summary {
@@ -580,10 +573,10 @@ impl Summary for Tweet {
     }
 }
 
-/*The difference is that after impl, 
-we put the trait name that we want 
-to implement, then use the for keyword, 
-and then specify the name of the type we 
+/*The difference is that after impl,
+we put the trait name that we want
+to implement, then use the for keyword,
+and then specify the name of the type we
 want to implement the trait for. */
 
 /*
@@ -604,7 +597,7 @@ time se kaze fji da parametar moze biti bilo sta
 sto implementira dati trait*/
 
 //ovo moze lepse da se napise pomocu Where
-pub fn notify<T: Summary + Display + Clone>(item1: &T, item2: &T){
+pub fn notify<T: Summary + Display + Clone>(item1: &T, item2: &T) {
     println!("Breaking news! {}", item.summarize());
 }
 
@@ -617,30 +610,30 @@ in 3 ways:
 2. borrowing immutably Fn
 3. borrowing mutably FnMut
  */
-/*razlika izmedju fje i closure-a 
+/*razlika izmedju fje i closure-a
 je sto se parametri nalaze unutar ||
 ako fja ima jednu liniju onda nam ne treba {}
 
 var ne cuva rezultat fje vec sam closure
-ne mora da se definise tip parametara niti 
+ne mora da se definise tip parametara niti
 povratni tip*/
 
-fn main(){
-
+fn main() {
     //funcion def
-    fn  add_one_v1   (x: u32) -> u32 { x + 1 }
+    fn add_one_v1(x: u32) -> u32 {
+        x + 1
+    }
 
     //fully annotated closure def
     let add_one_v2 = |x: u32| -> u32 { x + 1 };
 
     //closure skraceno
-    let add_one_v3 = |x|             { x + 1 };
-    let add_one_v4 = |x|               x + 1  ;
+    let add_one_v3 = |x| x + 1;
+    let add_one_v4 = |x| x + 1;
 
     let example_closure = |x| x;
 
     let s = example_closure(String::from("hello"));
-
 }
 
 struct Cacher<T>
@@ -652,22 +645,21 @@ where
 }
 
 /* Fn trait, iz std i svi closures implementiraju
-3 fn-a: Fn, FnMut, FnOnce 
+3 fn-a: Fn, FnMut, FnOnce
 kao i obicne fje
 
 new je contructor*/
 
 /*************
- * 
- * 
- * Optional koristim kao type kada npr 
+ *
+ *
+ * Optional koristim kao type kada npr
  * pravim neki strukt koji na pocetku ima
  * None vrednost a kasnije se inicijalizuje
 */
 
-
 /* iterators */
-//All iterators implement a trait 
+//All iterators implement a trait
 ///named Iterator from std
 fn main() {
     let v1 = vec![1, 2, 3];
@@ -707,7 +699,6 @@ fn main() {
     assert_eq!(v2, vec![2, 3, 4]);
 }
 
-
 //testovi
 
 /*
@@ -731,10 +722,10 @@ nije bitno sta je prvi a sta drugi argument
 assert_eq! za jednakost
 assert_ne! za nejednakost
 
-We place the #[should_panic] attribute after the #[test] attribute 
+We place the #[should_panic] attribute after the #[test] attribute
 and before the test function it applies to.
 
-To make should_panic tests more precise, we can add an optional 
+To make should_panic tests more precise, we can add an optional
 expected parameter to the should_panic attribute.
 */
 
@@ -764,7 +755,7 @@ impl Guess {
 mod tests {
     use super::*;
 
-    //expected se dodaje kako bi se preciznije odredilo zasto je 
+    //expected se dodaje kako bi se preciznije odredilo zasto je
     //doslo do panic result-a
     #[test]
     #[should_panic(expected = "Guess value must be less than or equal to 100")]
@@ -772,7 +763,6 @@ mod tests {
         Guess::new(200);
     }
 }
-
 
 //umesto da panici on samo detektuje gresku
 //ovde ne moze da se koristi #[should_panic]
@@ -792,19 +782,17 @@ mod tests {
 
 //kada postoje vise testova, oni se izvrsavaju paralelno
 //$ cargo test -- --test-threads=1
-//za definisanje broja niti 
+//za definisanje broja niti
 //ako u funkciji koju pozivamo imamo println onda ce taj println da se istampa
 //samo ako fail-uje test
-
 
 //ali ako zelim da vidim rezultat vrednosti za testove koji su prosli
 //onda: $ cargo test -- --show-output
 
-
 //ako zelim da pozovem samo jedan test onda je dovoljno da upisem
 //cargo test ime_test_funkcije
 
-//We can specify part of a test name, 
+//We can specify part of a test name,
 //and any test whose name matches that value will be run
 
 #[test]
@@ -830,11 +818,28 @@ when we run cargo test */
 //cargo test --test integration_test
 
 /***************************** */
-/*Treating each integration test file as its own crate is useful to create 
+/*Treating each integration test file as its own crate is useful to create
 separate scopes that are more like the way end users will be using your crate.
 However, this means files in the tests directory don’t share the same behavior
 as files in src do, as you learned in Chapter 7 regarding how to separate code
 into modules and files. */
 
+//poglavlje 12
 
+fn compare_vectors(a: Vec<State>, b: Vec<State>) -> usize {
+    a.iter().zip(&b).filter(|&(a, b)| a == b).count()
+}
 
+pub fn convert_into_enum(data: Vec<Vec<i32>>, h: usize, w: usize) -> Vec<Vec<State>> {
+    let mut converted_grid: Vec<Vec<State>> = vec![];
+
+    for i in 0..h {
+        let row = data[i as usize]
+            .iter()
+            .map(|cell| State::from(*cell))
+            .collect::<Vec<State>>();
+        converted_grid.push(row);
+    }
+
+    converted_grid
+}
