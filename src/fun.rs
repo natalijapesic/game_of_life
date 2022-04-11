@@ -1,4 +1,5 @@
 //https://docs.cosmwasm.com/docs/1.0/
+//https://github.com/CosmWasm/cosmwasm/blob/main/README.md
 
 fn main() {
     let v1 = vec![1, 2, 3];
@@ -887,5 +888,3 @@ sa druge strane child moze da vidi sve sto se nalazi u parent modulu
 iako je struktura public, njeni elementi su private ako im se ne podesi pub
 
 */
-
-
