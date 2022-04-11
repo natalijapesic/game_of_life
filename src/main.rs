@@ -174,7 +174,7 @@ fn main() {
         game.next_generation();
 
         count += 1;
-        if count == 10 {
+        if count == 10000 {
             break 'counting_up;
         }
     }

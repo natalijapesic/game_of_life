@@ -1,3 +1,5 @@
+//https://docs.cosmwasm.com/docs/1.0/
+
 fn main() {
     let v1 = vec![1, 2, 3];
 
@@ -843,3 +845,47 @@ pub fn convert_into_enum(data: Vec<Vec<i32>>, h: usize, w: usize) -> Vec<Vec<Sta
 
     converted_grid
 }
+
+//poglavlje 7
+
+/*
+A crate is a binary or library. The crate root is a source
+file that the Rust compiler starts from and makes up the root module of your crate
+
+A package is one or more crates that provide a set of functionality.
+A package contains a Cargo.toml file that describes how to build those crates.
+src/main.rs is the crate root of a binary crate with the same name as the package
+
+
+cargo new pravi novi package a tu se nalaze crate-ovi
+crate-ovi sadrze module
+moduli omogucavaju organizaciju koda i kontrolirsanje privacy
+
+znaci mogu da napravim da je module private ali da ima
+jednu public bib ali da bi se ona pozvala mora da se definise path
+do te login metode
+
+znaci ako imam napravljen main.rs onda ce binary crate biti napravljen
+kada se package napravi a main.rs je crate root
+
+lib.rs ako postoji u root-u src-a onda
+se pravi lib crate i lib.rs je crate root
+
+pravila
+1.package mora da ima bar jedan crate
+2.package moze imati 0 ili 1 lib crate cargo new --lib rest
+3.package moze imati vise binary crate-a (oni se cuvaju u bin dir)
+
+module se definise pomocu: mod ime i {}
+moduli mogu da imaju u se bi druge module, struct, enums, constants, traits
+
+crate - je modul koji se pravi po default-u
+
+ono sto je u child-u ne moze da se vidi od strane parent modul-a
+sa druge strane child moze da vidi sve sto se nalazi u parent modulu
+
+iako je struktura public, njeni elementi su private ako im se ne podesi pub
+
+*/
+
+
