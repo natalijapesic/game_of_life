@@ -1,6 +1,9 @@
 //https://docs.cosmwasm.com/docs/1.0/
 //https://github.com/CosmWasm/cosmwasm/blob/main/README.md
+//https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
+//ako ne znam return value onda upisem bilo sta
+//i onda dodje compajler i kaze e ocekujem ovo
 fn main() {
     let v1 = vec![1, 2, 3];
 
@@ -888,3 +891,75 @@ sa druge strane child moze da vidi sve sto se nalazi u parent modulu
 iako je struktura public, njeni elementi su private ako im se ne podesi pub
 
 */
+
+
+//ERRORS - nema exception-e
+/*
+RECOVERABLE Result<T, E>
+UNRECOVERABLE panic!
+program will print a failure message, unwind and clean up the stack, and then quit
+Rust walks back up the stack and cleans up the data from each function it encounters
+ili aborting - zavrsava program bez brisanja a memoriju brise OS
+RUST_BACKTRACE - A backtrace is a list of all the functions that 
+have been called to get to this point. 
+*/
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+use std::fs::File;
+use std::io::ErrorKind;
+
+fn main() {
+    let f = File::open("hello.txt").unwrap_or_else(|error| {
+        if error.kind() == ErrorKind::NotFound {
+            File::create("hello.txt").unwrap_or_else(|error| {
+                panic!("Problem creating the file: {:?}", error);
+            })
+        } else {
+            panic!("Problem opening the file: {:?}", error);
+        }
+    });
+}
+
+//UNWRAP
+/*If the Result value is the Ok variant, unwrap will return the value inside the Ok.
+ If the Result is the Err variant, unwrap will call the panic! macro for us. 
+ 
+ Ako unwrap koristimo na vise mesta onda je tesko razaznati gde je problem nastao.
+ Zato je dobro koristiti expect..jer tu se specificira problem
+ 
+ Kada pozivamo neku fju unutar druge, propagacija je dobra stvar ako 
+ ne znamo da li ce sve proci kako treba
+? propagacija
+Upitnik za fje koje vracaju vrednost
+RESULT ili OPTION ili neki drugi tip koji implementira FromResidual
+
+error values that have the ? operator called on them go through the from function, 
+defined in the From trait in the standard library, which is used to convert errors
+from one type into another. When the ? operator calls the from function, the error
+type received is converted into the error type defined in the return type of the
+current function
+
+Box<dyn Error> to mean “any kind of error.”
+MAIN
+
+The main function may return any types that implement the std::process::Termination trait.
+*/
+
+fn main() {
+    use std::fs::File;
+    use std::io;
+    use std::io::Read;
+
+    fn read_username_from_file() -> Result<String, io::Error> {
+        let mut f = File::open("hello.txt")?;
+        let mut s = String::new();
+        f.read_to_string(&mut s)?;//ako nije dobro vraca Error
+        Ok(s) //ako je dobro onda vraca s
+    }
+}
+
+
