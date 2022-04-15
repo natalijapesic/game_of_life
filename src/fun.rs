@@ -240,6 +240,11 @@ fn main() {
     let loopback = IpAddr::V6(String::from("::1"));
 }
 
+/*
+ENUM MOZE DA IMA IMA RAZLICITE TIPOVE
+A VEKTOR MOZE BITI TIPA ENUM WOW
+ */
+
 //enum sa fjom
 fn main() {
     enum Message {
@@ -607,6 +612,43 @@ pub fn notify<T: Summary + Display + Clone>(item1: &T, item2: &T) {
     println!("Breaking news! {}", item.summarize());
 }
 
+//BOUND TRAIT
+pub fn notify(item1: &impl Summary, item2: &impl Summary){}
+pub fn notify<T: Summary>(item1: &T, item2: &T) {}
+
+//WHERE
+fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {}
+fn some_function<T, U>(t: &T, u: &U) -> i32
+    where T: Display + Clone,
+          U: Clone + Debug
+{}
+fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {}
+
+
+struct Pair<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Pair<T> {
+    fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+}
+
+impl<T: Display + PartialOrd> Pair<T> {
+    fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x);
+        } else {
+            println!("The largest member is y = {}", self.y);
+        }
+    }
+}
+
+
+//TRAIT MOZE BITI I TIP ZA RETURN VALUE
+
 //closures
 // closures are able to capture their evnironment
 /*
@@ -961,5 +1003,110 @@ fn main() {
         Ok(s) //ako je dobro onda vraca s
     }
 }
+
+//SMART POINTERS
+/*
+A pointer is a general concept for a variable that contains an address in memory
+This address refers to, or “points at,” some other data
+
+Smart pointers, on the other hand, are data structures that not only act 
+like a pointer but also have additional metadata and capabilities.
+
+ reference counting, smart pointer type. This pointer enables you to have multiple
+owners of data by keeping track of the number of owners and, when no owners remain, 
+cleaning up the data
+
+OBRATI PAZNJU
+In Rust, which uses the concept of ownership and borrowing, 
+an additional difference between references and smart pointers is that
+references are pointers that only borrow data; in contrast, in many cases,
+smart pointers own the data they point to*/
+
+//PATTERN
+/*
+if let
+while let 
+Ignoring Remaining Parts of a Value with ..
+@ - The at operator (@) lets us create a variable that holds a value at 
+the same time we’re testing that value to see whether it matches a pattern.
+Using @ lets us test a value and save it in a variable within one pattern.
+*/
+
+fn main() {
+    let x = 5;
+
+    match x {
+        //moze i sa slovima
+        1..=5 => println!("one through five"),
+        _ => println!("something else"),
+    }
+}
+
+fn print_coordinates(&(x, y): &(i32, i32)) {
+    println!("Current location: ({}, {})", x, y);
+}
+
+fn main() {
+    let point = (3, 5);
+    print_coordinates(&point);
+}
+
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+fn main() {
+    let msg = Message::ChangeColor(0, 160, 255);
+
+    match msg {
+        Message::Quit => {
+            println!("The Quit variant has no data to destructure.")
+        }
+        Message::Move { x, y } => {
+            println!(
+                "Move in the x direction {} and in the y direction {}",
+                x, y
+            );
+        }
+        Message::Write(text) => println!("Text message: {}", text),
+        Message::ChangeColor(r, g, b) => println!(
+            "Change the color to red {}, green {}, and blue {}",
+            r, g, b
+        ),
+    }
+}
+
+fn main() {
+    let num = Some(4);
+
+    match num {
+        Some(x) if x % 2 == 0 => println!("The number {} is even", x),
+        Some(x) => println!("The number {} is odd", x),
+        None => (),
+    }
+}
+
+fn main() {
+    enum Message {
+        Hello { id: i32 },
+    }
+
+    let msg = Message::Hello { id: 5 };
+
+    match msg {
+        Message::Hello {
+            id: id_variable @ 3..=7,
+        } => println!("Found an id in range: {}", id_variable),
+        Message::Hello { id: 10..=12 } => {
+            println!("Found an id in another range")
+        }
+        Message::Hello { id } => println!("Found some other id: {}", id),
+    }
+}
+
+
 
 
